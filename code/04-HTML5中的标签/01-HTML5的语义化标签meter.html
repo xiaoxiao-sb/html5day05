@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<meter value="20" min="10" max="20" low="13" high="18"></meter>
+<meter value="13" min="10" max="100" low="50" high="60" optimum="55"></meter>
+<meter id="m" value="51" min="50" max="100" low="80" high="90"></meter>
+<script type="text/javascript">
+    setInterval(function () {
+        var m=document.getElementById("m");
+        var result=parseInt(m.value);
+        result++;
+        m.value=result;
+
+
+    },100);
+</script>
+</body>
+</html>

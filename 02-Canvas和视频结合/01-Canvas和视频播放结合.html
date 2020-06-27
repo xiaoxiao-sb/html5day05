@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid red;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+<video id="v" width="0" height="0" autoplay
+       src="https://blz-videos.nosdn.127.net/1/OverWatch/AnimatedShots/Overwatch_AnimatedShot_Soldier76_Hero.mp4"></video>
+<canvas id="test" width="300" height="200"></canvas>
+<script type="text/javascript">
+    //页面加载
+    window.onload = function () {
+        var video = document.querySelector("#v");
+        var canvas = document.querySelector("#test");
+        if (!canvas.getContext) return;
+        var ctx = canvas.getContext("2d");
+        //当视频加载后把视频直接绘制到画布上
+        video.addEventListener("loadeddata",function () {
+           //定时器
+           setInterval(function () {
+               ctx.drawImage(video,0,0,canvas.width,canvas.height);
+           },10);
+        });
+
+
+    };
+</script>
+</body>
+</html>

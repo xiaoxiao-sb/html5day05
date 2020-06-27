@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        img {
+            position: absolute;
+            left: 200px;
+            top: 150px;
+        }
+
+        div {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+<img id="m" src="mr.png" alt="">
+<div id="dv"></div>
+
+<script type="text/javascript">
+    //页面加载
+    window.onload = function () {
+        //获取div
+        var divObj = document.getElementById("dv");
+        var imgObj = document.getElementById("m");
+
+        //调用
+        var obj={
+            move:function () {
+                console.log("嘎嘎");
+            }
+        };
+        drag(divObj,imgObj,50,obj);
+
+
+        //封装
+
+        /**
+         *
+         * ele1---第一个元素
+         * ele2--第二个元素
+         * value---贴的值
+         * callback---对象
+         *
+         * */
+        function drag(ele1,ele2,value,callback) {
+            ele1.onmousedown = function (e) {
+                e = e || window.event;
+                //该对象存储的是鼠标按下的横纵坐标
+                var mousePoint = {x: 0, y: 0};
+                //该对象存储的是元素的left和top值
+                var elePoint = {x: 0, y: 0};
+
+                mousePoint.x = e.clientX;//可视区域的横坐标(鼠标第一次按下的位置的横坐标)
+                mousePoint.y = e.clientY;//可视区域的纵坐标(同上)
+                elePoint.x = this.offsetLeft;//元素默认的left的值
+                elePoint.y = this.offsetTop;//元素默认的top值
+                if (ele1.setCapture) {//捕获鼠标
+                    ele1.setCapture();
+                }
+
+                //鼠标要移动
+                document.onmousemove = function (e) {
+                    e = e || window.event;
+                    var mouseMovePoint = {x: 0, y: 0};
+                    //把鼠标移动后的横纵坐标存储到mouseMovePoint对象中
+                    mouseMovePoint.x = e.clientX;
+                    mouseMovePoint.y = e.clientY;
+
+                    var left = elePoint.x + mouseMovePoint.x - mousePoint.x;
+                    var top = elePoint.y + mouseMovePoint.y - mousePoint.y;
+
+                    var flag=value?value:0;
+                    //判断
+                    if (left < flag) {
+                        left = 0;
+                    } else if (left > document.documentElement.clientWidth - ele1.offsetWidth - flag) {
+                        left = document.documentElement.clientWidth - ele1.offsetWidth;
+                    }
+                    if (top < flag) {
+                        top = 0;
+                    } else if (top > document.documentElement.clientHeight - ele1.offsetHeight - flag) {
+                        top = document.documentElement.clientHeight - ele1.offsetHeight;
+                    }
+
+
+                    //碰撞
+                    if(ele2){
+                        var L1 = ele1.offsetLeft;
+                        var T1 = ele1.offsetTop;
+                        var R1 = ele1.offsetLeft + ele1.offsetWidth;
+                        var B1 = ele1.offsetTop + ele1.offsetHeight;
+
+                        var L2 = ele2.offsetLeft;
+                        var T2 = ele2.offsetTop;
+                        var R2 = ele2.offsetLeft + ele2.offsetWidth;
+                        var B2 = ele2.offsetTop + ele2.offsetHeight;
+
+                        if (R1 < L2 || B1 < T2 || L1 > R2 || T1 > B2) {
+                            //没碰上
+                            ele2.src = "mr.png";
+
+                        } else {
+                            //有事情发生了
+                            ele2.src = "zz.png";
+                        }
+                    }
+
+
+
+                    ele1.style.left = left + "px";
+                    ele1.style.top = top + "px";
+
+
+                    if(callback&&callback["move"]&&typeof callback["move"]==="function"){
+                        callback["move"].call(ele1);
+                    }
+                };
+                document.onmouseup = function () {
+                    document.onmousemove = document.onmouseup = null;
+                    if (document.releaseCapture) {
+                        //释放鼠标
+                        document.releaseCapture();
+                    }
+                };
+                return false;//取消默认的行为
+
+
+            }
+        }
+    };
+
+
+    // var obj1={
+    //     age:10,
+    //     sayHi:function () {
+    //         console.log("您好,我今年已经:"+this.age);
+    //     }
+    // }
+    // var obj2={
+    //     age:20
+    // };
+    // obj1.sayHi.call(obj2);
+
+
+
+
+</script>
+</body>
+</html>

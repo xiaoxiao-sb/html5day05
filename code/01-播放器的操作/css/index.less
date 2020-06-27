@@ -1,0 +1,155 @@
+@import "reset.less";
+
+#wrap{
+  height: 100%;
+  background-color: #383838;
+  font-size: 0;
+  .controls{
+    min-width: 600px;
+    height: 25px;
+    background-color: #2A2A2A;
+    position: relative;
+    .btns{
+      width: 55px;
+      height: 25px;
+      position: absolute;
+      left:0;
+      top:0;
+      text-align: center;
+      &>span{
+        display: inline-block;
+        width: 9px;
+        height: 11px;
+        margin-top: 7px;
+        background: url("../img/icon.png") no-repeat;
+        &:nth-child(1){
+          background-position: 0 -23px;
+          margin-right: 10px;
+          &.active{
+            background-position: 0px -11px;
+          }
+        }
+        &:nth-child(2){
+          background-position: 0px 0px;
+        }
+      }
+    }
+    .progress{
+      height: 25px;
+      position: relative;
+      margin: 0 230px 0 55px;
+      .container{
+        width: 100%;
+        position: absolute;
+        height: 3px;
+        background-color: #737373;
+        margin-top: 11px;
+        .inner{
+          width: 9px;
+          height: 7px;
+          background-color: white;
+          position: absolute;
+          left:0;
+          top:0;
+          margin-top: -2px;
+          border-radius: 2px;
+        }
+      }
+      .deeppink{
+        width: 20px;
+        height: 3px;
+        position: absolute;
+        background-color: deeppink;
+        left: 0;
+        top:0;
+        margin-top: 11px;
+      }
+    }
+    .time-sound{
+      width: 230px;
+      height: 25px;
+      position: absolute;
+      right:0;
+      bottom:0;
+      text-align: center;
+      &>div{
+        float: left;
+        height: 25px;
+      }
+      .time{
+        width:120px;
+        text-align: center;
+        line-height: 25px;
+        font-size: 12px;
+        color:white;
+      }
+      .sound{
+        width: 80px;
+        &>div{
+          height: 25px;
+          float: left;
+        }
+        .muted{
+          width: 20px;
+          text-align: center;
+          &>span{
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 7px auto;
+            background: url("../img/icon.png")no-repeat;
+            background-position: 0 -34px;
+            &.active{
+              background-position: 0 -46px;
+            }
+
+          }
+        }
+        .sound-progress{
+          width: 60px;
+          position: relative;
+          .sound-container{
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            top:11px;
+            border-radius: 3px;
+            background-color: #737373;
+            .sound-inner{
+              width: 9px;
+              height: 7px;
+              position: absolute;
+              background-color: white;
+              margin-top: -2px;
+            }
+          }
+          .sound-pink{
+            position: absolute;
+            left:0;
+            top:0;
+            width: 10px;
+            height: 3px;
+            margin-top: 11px;
+            background-color: deeppink;
+          }
+        }
+      }
+      .full-screen {
+        width: 30px;
+        height: 25px;
+        text-align: center;
+        &>span{
+          display: inline-block;
+          width: 11px;
+          height: 11px;
+          margin: 7px auto;
+          background: url("../img/icon.png") no-repeat;
+          background-position: 0 -58px;
+          &>.active{
+            background-position: 0 -71px;
+          }
+        }
+      }
+    }
+  }
+}

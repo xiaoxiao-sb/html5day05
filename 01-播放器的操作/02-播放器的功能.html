@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<!---为了方便操作,最外面有一个div-->
+<div id="wrap">
+    <video src="https://blz-videos.nosdn.127.net/1/OverWatch/AnimatedShots/Overwatch_AnimatedShot_Soldier76_Hero.mp4"></video>
+    <div class="controls">
+        <div class="btns"><!--左侧区域-->
+            <span class="start"></span>
+            <span class="stop"></span>
+        </div>
+        <div class="progress"><!--中间进度条区域-->
+            <div class="container">
+                <div class="inner"></div>
+            </div>
+            <div class="deeppink"></div>
+        </div>
+        <div class="time-sound"><!--右侧区域-->
+            <div class="time"><!--右侧显示时间的区域-->
+                <span class="now">00:00:00</span>/<span class="all">00:00:00</span>
+            </div>
+            <div class="sound"><!--右侧中间显示音量和静音的区域-->
+                <div class="muted">
+                    <span></span>
+                </div>
+                <div class="sound-progress">
+                    <div class="sound-container">
+                        <div class="sound-inner"></div>
+                    </div>
+                    <div class="sound-pink"></div>
+                </div>
+            </div>
+            <div class="full-screen"><!--右侧全屏区域-->
+                <span></span>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="js/drag.js"></script>
+<script type="text/javascript">
+    //页面加载
+    //当页面加载后,设置video全屏显示
+    window.onload = function () {
+        var wrap = document.querySelector("#wrap");
+        //获取的是整个的控件的区域的元素
+        var controls = document.querySelector(".controls");
+        //获取video元素
+        var video = document.querySelector("video");
+
+        //进度条的div---------------progress
+        var progress = document.querySelector(".progress");
+        //进度条的容器div---container
+        var container = document.querySelector(".container");
+        //进度条的按钮 div inner
+        var inner = document.querySelector(".inner");
+        //进度条的-----------deeppink
+        var deeppink = document.querySelector(".deeppink");
+        //声音的sound-progress
+        var soundProgress = document.querySelector(".sound-progress");
+        //声音的sound-container
+        var soundContainer = document.querySelector(".sound-container");
+        //声音的按钮 sound-inner
+        var soundInner = document.querySelector(".sound-inner");
+        //声音的sound-pink
+        var soundPink = document.querySelector(".sound-pink");
+
+        //播放的按钮
+        var start = document.querySelector(".start");
+        //停止的按钮
+        var stop = document.querySelector(".stop");
+
+        //=====================第二天新增的功能代码================
+        //获取显示当前时间的now的标签和all的标签
+        var now = document.querySelector(".now");
+        var all = document.querySelector(".all");
+
+
+        //===========获取静音的标签和里面的span
+        var muted = document.querySelector(".muted");
+        var mutedSpan = document.querySelector(".muted>span");
+
+        //全屏的获取
+        var fullScreen = document.querySelector(".full-screen");
+        var fullScreenSpan = document.querySelector(".full-screen>span");
+
+
+        video.width = document.documentElement.clientWidth;
+        video.height = document.documentElement.clientHeight - controls.offsetHeight;
+
+        window.onresize = function () {
+            //如果浏览器的窗口的大小发生变化,此时视频的标签的宽和高重新的设置一下
+            if (document.documentElement.clientWidth >= 600) {
+                video.width = document.documentElement.clientWidth;
+                video.height = document.documentElement.clientHeight - controls.offsetHeight;
+            }
+        };
+
+
+        //页面的可视区域
+        //var width=document.documentElement.clientWidth||document.body.clientWidth||0;
+
+        //第一个功能:鼠标按在进度条的小按钮上,可以移动这个小按钮
+        //(播放进度条的按钮,右侧声音的小按钮)
+        var innerCall = {
+            move: function () {
+                //鼠标移动按钮的时候,设置按钮的left=deeplink的宽
+                this.style.left = deeppink.style.width = this.offsetLeft + "px";
+                //需要设置当前 的时间
+                video.currentTime = video.duration * (this.offsetLeft / (progress.clientWidth - this.offsetWidth));
+            }
+        };
+        removeClick();
+
+        //干掉事件冒泡:
+        function removeClick() {
+            inner.onclick = function (e) {
+                if (e) {
+                    e.stopPropagation();
+                } else {
+                    window.event.cancelBubble = true;
+                }
+            };
+            container.onclick = function (e) {
+                if (e) {
+                    e.stopPropagation();
+                } else {
+                    window.event.cancelBubble = true;
+                }
+            };
+        }
+
+        var flag = 1;//默认音量的值是1,用来记录音量的值==============全局的变量
+        var soundCall = {
+            move: function () {
+                this.style.left = soundPink.style.width = this.offsetLeft + "px";
+                //记录音量的值,把值给flag
+                flag = (this.offsetLeft) / (soundProgress.clientWidth - soundInner.offsetWidth);
+
+                video.volume = flag;
+                //还需要判断是否静音了
+                if (video.volume == 0) {
+                    //已经静音了
+                    //设置样式
+                    video.muted = true;
+                    mutedSpan.classList.add("active");
+                } else {
+                    mutedSpan.classList.remove("active");
+                    video.muted = false;
+                }
+
+            }
+        };
+        //播放进度条的小按钮
+        $.drag(inner, innerCall);
+        //音量进度条的小按钮
+        $.drag(soundInner, soundCall);
+
+
+        //开始功能了
+        player();
+
+        function player() {
+            var timeId = 0;//记录定时器的id值
+            //第二个功能:播放和暂停
+            start.onclick = function () {
+                //判断是暂停还是播放
+                if (video.paused) {//paused得到的是暂停或者是播放
+                    //此时是暂停的,需要播放
+                    video.play();
+                    start.classList.add("active");//添加一个类样式
+                    timeId = setInterval(move, 1000);
+                } else {
+                    //播放的状态,需要改成暂停
+                    video.pause();
+                    start.classList.remove("active");
+                    clearInterval(timeId);
+                }
+
+            };
+
+            //第三个功能:停止播放
+            stop.onclick = function () {
+                //停止播放
+                video.pause();
+                //修改播放按钮的状态
+                start.classList.remove("active");
+                //停止定时器
+                clearInterval(timeId);
+                //干掉进度条()
+                inner.style.left = deeppink.style.width = "0px";
+                video.currentTime = 0;//当前的时间恢复一下
+            };
+            //第四个功能：点击进度条,实现是视频跳的功能
+            progress.onclick = function (e) {
+                e = e || window.event;
+                //播放状态修改,播放的样子
+                start.classList.add("active");
+                //进度条要自动的移动
+                timeId = setInterval(move, 1000);
+                video.play();
+                //当前的时间=总时间*(按钮的位置/(容器的宽-按钮的宽))
+                video.currentTime = video.duration * ((e.clientX - progress.offsetLeft) / (progress.clientWidth - inner.offsetWidth));
+            };
+
+            //第五个功能:加载总时间,把总时间显示到后面的time的span标签中
+            video.addEventListener("loadeddata", function () {
+                //显示的总时间
+                all.innerHTML = changeTime(video.duration);
+
+            });
+
+
+            //验证音量
+            //设置音量按钮的位置和音量的soundpink的宽一致(音量的容器的宽-小按钮的宽)
+            soundInner.style.left = soundPink.style.width = (soundProgress.clientWidth - soundInner.offsetWidth) + "px";
+            //第六个功能:静音的功能的时候
+            mutedSpan.onclick = function () {
+                //先判断是否是静音的
+                if (video.muted) {
+                    //此时已经静音了,但是要改变成没有静音
+                    video.muted = false;
+                    mutedSpan.classList.remove("active");
+                    flag = flag === 1 ? 1 : flag;
+                    video.volume = flag;
+                    soundInner.style.left = soundPink.style.width = (soundProgress.clientWidth - soundInner.offsetWidth) * flag + "px";
+
+                } else {
+                    //此时没有静音呢,但是要变成静音
+                    video.muted = true;
+                    mutedSpan.classList.add("active");
+                    video.volume = 0;//音量直接为0
+                    //设置小按钮left和soundpink的width为0px
+                    soundInner.style.left = soundPink.style.width = "0px";
+                }
+            };
+
+            //全屏
+            var isFull=false;//自己定义变量记录是不是全屏,默认是false,就不是全屏
+            fullScreenSpan.onclick=function () {
+                if(isFull){
+                    //现在是全屏,要变成不是全屏的状态
+                    isFull=false;
+                    this.classList.remove("active");
+
+                    if(document.exitFullscreen){
+                        document.exitFullscreen();
+                    }else if(document.mozCancelFullScreen){
+                        document.mozCancelFullScreen();
+                    }else if(document.msExtiFullScreen){
+                        document.msExitFullScreen();
+                    }
+
+                }else{
+                    //此时不是全屏,但是要变成全屏
+                    isFull=true;
+                    this.classList.add("active");
+                    if(document.documentElement.requestFullscreen){
+                        document.documentElement.requestFullscreen();//W3C
+                    }else if(document.mozRequestFullScreen){
+                        document.mozRequestFullScreen();//火狐的
+                    }else if(document.webkitRequestFullScreen){
+                        document.webkitRequestFullScreen();//谷歌
+                    }else if(document.msRequestFullScreen){
+                        document.msRequestFullScreen();//IE11
+                    }
+                }
+            };
+
+
+
+            function changeTime(time) {
+                //因为要设计到计算 ,最好转一下类型
+                time = parseInt(time);
+                var h = Math.floor(time / 3600);
+                var m = Math.floor(time % 3600 / 60);
+                var s = Math.floor(time % 60);
+                h = h < 10 ? "0" + h : h;
+                m = m < 10 ? "0" + m : m;
+                s = s < 10 ? "0" + s : s;
+                return h + ":" + m + ":" + s;
+            }
+
+
+            //移动播放进度条的函数
+            function move() {
+                //就是移动小按钮left和deeppink的width
+                //总时间 30秒  当前的时间 10
+                //10/30 ----比例关系
+                //小按钮的left和进度条容器的宽也有比例
+                inner.style.left = deeppink.style.width = (video.currentTime / video.duration) * (container.clientWidth - inner.offsetWidth) + "px";
+                //显示当前的时间
+                now.innerHTML = changeTime(video.currentTime);
+
+            }
+        }
+    };
+</script>
+</body>
+</html>

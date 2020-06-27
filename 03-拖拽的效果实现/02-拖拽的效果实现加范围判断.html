@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        img {
+            position: absolute;
+            left: 200px;
+            top: 150px;
+        }
+
+        div {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+<img id="m" src="mr.png" alt="">
+<div id="dv"></div>
+
+<script type="text/javascript">
+    //页面加载
+    window.onload = function () {
+        //获取div
+        var divObj = document.getElementById("dv");
+        divObj.onmousedown = function (e) {
+            e = e || window.event;
+            //该对象存储的是鼠标按下的横纵坐标
+            var mousePoint = {x: 0, y: 0};
+            //该对象存储的是元素的left和top值
+            var elePoint = {x: 0, y: 0};
+
+            mousePoint.x = e.clientX;//可视区域的横坐标(鼠标第一次按下的位置的横坐标)
+            mousePoint.y = e.clientY;//可视区域的纵坐标(同上)
+            elePoint.x = this.offsetLeft;//元素默认的left的值
+            elePoint.y = this.offsetTop;//元素默认的top值
+
+            //鼠标要移动
+            document.onmousemove = function (e) {
+                e = e || window.event;
+                var mouseMovePoint = {x: 0, y: 0};
+                //把鼠标移动后的横纵坐标存储到mouseMovePoint对象中
+                mouseMovePoint.x = e.clientX;
+                mouseMovePoint.y = e.clientY;
+
+                var left = elePoint.x + mouseMovePoint.x - mousePoint.x;
+                var top = elePoint.y + mouseMovePoint.y - mousePoint.y;
+
+                //判断
+                if(left<20){
+                    left=0;
+                }else if(left>document.documentElement.clientWidth-divObj.offsetWidth-20){
+                    left=document.documentElement.clientWidth-divObj.offsetWidth;
+                }
+                if(top<20){
+                    top=0;
+                }else if(top>document.documentElement.clientHeight-divObj.offsetHeight-20){
+                    top=document.documentElement.clientHeight-divObj.offsetHeight;
+                }
+
+                divObj.style.left = left + "px";
+                divObj.style.top = top + "px";
+            };
+            document.onmouseup=function () {
+              document.onmousemove=document.onmouseup=null;
+            };
+            return false;//取消默认的行为
+
+
+
+        }
+    };
+</script>
+</body>
+</html>

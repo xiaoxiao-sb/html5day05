@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<progress max="10" value="20"></progress>
+<progress id="p1" max="100" value="20"></progress>
+<progress max="10"></progress>
+<script type="text/javascript">
+    //
+    var timeId=setInterval(function () {
+        var count=document.getElementById("p1").value;
+        count++;
+        document.getElementById("p1").value=count;
+        if(count===50){
+            clearInterval(timeId);
+        }
+    },100);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        div {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: 300px;
+            top: 200px;
+        }
+    </style>
+</head>
+<body>
+<div id="dv"></div>
+<img src="mr.png" alt="" id="im">
+<script type="text/javascript">
+    window.onload = function () {
+        var divObj = document.getElementById("dv");
+        var img = document.getElementById("im");
+        var obj={
+            move:function () {
+                console.log("今天真好啊");
+            }
+        };
+        drag(divObj,20,img,obj);
+
+    };
+
+    /*
+    * ele1---第一个元素
+    * ele2---第二个元素
+    * value--磁贴的距离
+    * */
+    function drag(ele1, value,ele2,callback) {
+        var px = 0;
+        var flag = true;
+        //用来存储鼠标第一次按下的坐标
+        var mouseStartPoint = {x: 0, y: 0};
+        //记录元素的left和top
+        var elePoint = {x: 0, y: 0};
+        //鼠标按住div进行移动拖拽,释放鼠标后停留在当前位置
+        ele1.onmousedown = function (e) {
+            e = e || window.event;
+            elePoint.x = this.offsetLeft;
+            elePoint.y = this.offsetTop;
+            mouseStartPoint.x = e.clientX;
+            mouseStartPoint.y = e.clientY;
+            if (ele1.setCapture) {
+                ele1.setCapture();
+            }
+            //鼠标移动
+            document.onmousemove = function (e) {
+                e = e || window.event;
+                var mouseMovePoint = {x: 0, y: 0};
+                mouseMovePoint.x = e.clientX;
+                mouseMovePoint.y = e.clientY;
+                //移动后的坐标
+                var left = elePoint.x + mouseMovePoint.x - mouseStartPoint.x;
+                var top = elePoint.y + mouseMovePoint.y - mouseStartPoint.y;
+                px = value ? value : px;//判断是否传入了磁贴的距离值
+                //移动后的位置
+                if (left < px) {
+                    left = 0;
+                } else if (left > document.documentElement.clientWidth - ele1.offsetWidth - px) {
+                    left = document.documentElement.clientWidth - ele1.offsetWidth;
+                }
+                if (top < px) {
+                    top = 0;
+                } else if (top > document.documentElement.clientHeight - ele1.offsetHeight - px) {
+                    top = document.documentElement.clientHeight - ele1.offsetHeight;
+                }
+
+               if(ele2){
+                   //div的四个范围
+                   var L1 = ele1.offsetLeft;
+                   var T1 = ele1.offsetTop;
+                   var R1 = ele1.offsetLeft + ele1.offsetWidth;
+                   var B1 = ele1.offsetTop + ele1.offsetHeight;
+                   //img的四个范围
+                   var L2 = ele2.offsetLeft;
+                   var T2 = ele2.offsetTop;
+                   var R2 = ele2.offsetLeft + ele2.offsetWidth;
+                   var B2 = ele2.offsetTop + ele2.offsetHeight;
+                   if (R1 < L2 || B1 < T2 || L1 > R2 || T1 > B2) {
+                       //没碰到
+                       ele2.src = "mr.png";
+                   } else {
+                       //碰到了
+                       ele2.src = "zz.png";
+                   }
+
+               }
+
+                ele1.style.left = left + "px";
+                ele1.style.top = top + "px";
+
+                //如果传入callback对象,那么就移动
+                if(callback&&callback["move"]&&typeof callback["move"]==="function"){
+                    callback["move"].call(ele1);
+                }
+
+            };
+            //鼠标抬起
+            document.onmouseup = function () {
+                document.onmousemove = document.onmouseup = null;
+                if (document.releaseCapture) {
+                    document.releaseCapture();
+                }
+            };
+            return false;
+
+        }
+    }
+</script>
+</body>
+</html>
